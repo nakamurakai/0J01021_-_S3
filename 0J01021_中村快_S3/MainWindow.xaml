@@ -36,7 +36,7 @@
             VerticalAlignment="Top" 
             Width="240" 
             TextChanged="TextBox_TextChanged" 
-            Margin="0,120,0,0" />
+            Margin="0,170,0,0" />
         <!--テキストボックス：ユーザーID-->
         <TextBox 
             x:Name="userPassword_textBox"
@@ -49,6 +49,6 @@
             VerticalAlignment="Top" 
             Width="240" 
             TextChanged="TextBox_TextChanged" 
-            Margin="0,160,0,0" />
+            Margin="0,250,0,0" />
     </Grid>
 </Window>
