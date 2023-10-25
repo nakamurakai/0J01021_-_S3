@@ -20,27 +20,28 @@ namespace _0J01021_中村快_S3
     /// </summary>
     public partial class MainWindow : Window
     {
-        // ログインボタン
-        List<Button> buttons = new List<Button>();
-
+        private Schedule schedule;
+        private UserControl[] userControls;
         public MainWindow()
         {
             InitializeComponent();
+            schedule = new Schedule(this);
+
+            userControls = new UserControl[]{
+                schedule
+            };
         }
 
-        private void Login_Button_Click(object sender, RoutedEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            userId_textBox.Text = "kai";
+            formPanel.Children.Add(schedule);
+            this.Title = "横:" + this.Width + "," + this.Height;
+
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void scheduleButton_Click(object sender, RoutedEventArgs e)
         {
-            
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
+            Hyperlink hyperlink = new Hyperlink();
         }
     }
 }

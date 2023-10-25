@@ -1,0 +1,183 @@
+﻿<UserControl x:Class="_0J01021_中村快_S3.Schedule"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:_0J01021_中村快_S3"
+             mc:Ignorable="d" 
+             d:DesignHeight="480"
+             d:DesignWidth="450"
+             Background="White"
+             Loaded="Schedule_Loaded">
+    <Grid>
+
+        <!--日付を基準-->
+        <RadioButton
+            x:Name="allRadioButton"
+            Content="一覧"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="10,10,0,0"
+            VerticalAlignment="Top"
+            Width="67"
+            Height="21" 
+            Checked="allRadioButton_Checked"/>
+
+        <!--カテゴリを基準-->
+        <RadioButton
+            x:Name="dateRadioButton"
+            Content="日付"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="95,10,0,0"
+            VerticalAlignment="Top"
+            Width="81"
+            Height="21"
+            Checked="dateRadioButton_Checked"/>
+
+        <RadioButton
+            x:Name="categoryRadioButton"
+            Content="カテゴリ"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="180,10,0,0"
+            VerticalAlignment="Top"
+            Width="81"
+            Height="21"
+            Checked="categoryRadioButton_Checked"/>
+
+        <!--前の日付またはカテゴリ-->
+        <Button
+            x:Name="beforeButton"
+            Background="#FFFFFF"
+            BorderBrush="#CEC3C3"
+            Content="2023/10/17"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="14"
+            Foreground="#FFCEC3C3"
+            HorizontalAlignment="Left"
+            Margin="0,40,0,0"
+            VerticalAlignment="Top"
+            Width="120"
+            Height="30"/>
+
+        <!--表示する日付またはカテゴリ-->
+
+        <!--次の日付またはカテゴリ-->
+        <Button
+            x:Name="afterButton"
+            Background="#FFFFFF"
+            BorderBrush="#CEC3C3"
+            Content="2023/10/19"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="14"
+            Foreground="#FFCEC3C3"
+            HorizontalAlignment="Left"
+            Margin="330,40,0,0"
+            VerticalAlignment="Top"
+            Width="120"
+            Height="30"/>
+
+        <ComboBox
+            x:Name="comboBox1"
+            Background="#FFFFFF"
+            HorizontalAlignment="Left"
+            Margin="335,10,0,0"
+            VerticalAlignment="Top"
+            Width="105">
+            <ComboBoxItem Content="すべて"/>
+            <ComboBoxItem Content="未完了"/>
+            <ComboBoxItem Content="完了済み"/>
+        </ComboBox>
+        <ScrollViewer 
+            Margin="0,70,0,0"
+            Width="450"
+            Height="410">
+            <Canvas 
+                x:Name="contents"
+                Margin="0,0,0,0">
+                <Border 
+                    Background="#FEDCD0"
+                    BorderBrush="#CEC3C3"
+                    BorderThickness="1"
+                    Canvas.Left="0"
+                    Canvas.Top="0"
+                    Height="30"
+                    Width="50">
+                    <TextBlock
+                        FontFamily="UD Digi Kyokasho NK-R"
+                        FontSize="12"
+                        Text="Check"
+                        TextAlignment="Center"
+                        VerticalAlignment="Center"/>
+                </Border>
+
+                <Border 
+                    Background="#FEDCD0"
+                    BorderBrush="#CEC3C3"
+                    BorderThickness="1"
+                    Canvas.Left="50"
+                    Canvas.Top="0"
+                    Height="30"
+                    Width="70">
+                    <TextBlock
+                        FontFamily="UD Digi Kyokasho NK-R"
+                        FontSize="12"
+                        Text="Date"
+                        TextAlignment="Center"
+                        VerticalAlignment="Center"/>
+                </Border>
+
+                <Border 
+                    Background="#FEDCD0"
+                    BorderBrush="#CEC3C3"
+                    BorderThickness="1"
+                    Canvas.Left="120"
+                    Canvas.Top="0"
+                    Height="30"
+                    Width="263">
+                    <TextBlock
+                        FontFamily="UD Digi Kyokasho NK-R"
+                        FontSize="12"
+                        Text="Do"
+                        TextAlignment="Center"
+                        VerticalAlignment="Center"/>
+                </Border>
+
+                <Border 
+                    Background="#FEDCD0"
+                    BorderBrush="#CEC3C3"
+                    BorderThickness="1"
+                    Canvas.Left="383"
+                    Canvas.Top="0"
+                    Height="30"
+                    Width="50">
+                    <TextBlock
+                        FontFamily="UD Digi Kyokasho NK-R"
+                        FontSize="12"
+                        Text="Detail"
+                        TextAlignment="Center"
+                        VerticalAlignment="Center"/>
+                </Border>
+            </Canvas>
+        </ScrollViewer>
+        <Button
+            x:Name="nowButton"
+            Background="#FFFFFF"
+            BorderBrush="#CEC3C3"
+            Content="2023/10/18"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="120,40,0,0"
+            VerticalAlignment="Top"
+            Width="210"
+            Height="30"/>
+
+
+
+    </Grid>
+</UserControl>

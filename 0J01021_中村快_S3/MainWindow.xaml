@@ -5,50 +5,59 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_0J01021_中村快_S3"
         mc:Ignorable="d"
-        Title="やることリスト" Height="450" Width="300">
-    <Grid>
+        Title="やることリスト"
+        Height="508"
+        Width="465"
+        Loaded="MainWindow_Loaded">
 
-        <!--ボタン：ログイン-->
-        <Border
-            Width="100" Height="30"
-            CornerRadius="10" Background="#FF68FF00" Margin="0,300,0,0">
-            <Button 
-                x:Name="Login_Button"
-                Background="Transparent"
-                BorderBrush="#00707070"
-                Content="ログイン" 
-                FontFamily="UD Digi Kyokasho NK-R" 
-                FontSize="16" 
-                Foreground="White"
-                
-                Click="Login_Button_Click"
-                />
-        </Border>
-        <!--テキストボックス：ユーザーID-->
-        <TextBox 
-            x:Name="userId_textBox"
+    <Grid Margin="0,0,0,0" Height="500" Width="450">
+        <!--ナビゲーション-->
+        <!--予定ボタン-->
+        <Button
+            Name="scheduleButton"
+            Click="scheduleButton_Click"
+            Content="予定"
             FontFamily="UD Digi Kyokasho NK-R"
             FontSize="16"
-            Foreground="#FFA0A0A0"
-            HorizontalAlignment="Center" 
-            TextWrapping="Wrap" 
-            Text="ユーザーID" 
-            VerticalAlignment="Top" 
-            Width="240" 
-            TextChanged="TextBox_TextChanged" 
-            Margin="0,170,0,0" />
-        <!--テキストボックス：ユーザーID-->
-        <TextBox 
-            x:Name="userPassword_textBox"
+            HorizontalAlignment="Left"
+            Margin="0,0,0,0"
+            VerticalAlignment="Top"
+            Width="150"
+            Height="40"
+            Background="#FFF5B199"/>
+
+        <!--追加ボタン-->
+        <Button
+            Name="addButton"
+            Content="追加"
             FontFamily="UD Digi Kyokasho NK-R"
             FontSize="16"
-            Foreground="#FFA0A0A0"
-            HorizontalAlignment="Center" 
-            TextWrapping="Wrap" 
-            Text="パスワード" 
-            VerticalAlignment="Top" 
-            Width="240" 
-            TextChanged="TextBox_TextChanged" 
-            Margin="0,250,0,0" />
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Width="150"
+            Height="40"
+            Background="#FFF5B199"
+            Margin="150,0,0,0"/>
+
+        <!--設定ボタン-->
+        <Button
+            Name="configButton"
+            Content="設定"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Width="150"
+            Height="40"
+            Background="#FFF5B199"
+            Margin="300,0,0,0"/>
+
+        <!--フォームパネル-->
+        <Canvas 
+            Name="formPanel"
+            Width="465"
+            Height="450"
+            Margin="0,40,0,10"/>
+
     </Grid>
 </Window>
