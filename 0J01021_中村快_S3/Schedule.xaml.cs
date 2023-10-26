@@ -8,26 +8,45 @@ using System.Diagnostics;
 using System.Windows.Navigation;
 using static System.Net.Mime.MediaTypeNames;
 using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace _0J01021_中村快_S3
 {
     /// <summary>
     /// Schedule.xaml の相互作用ロジック
     /// </summary>
+    /// 次やること：330行目の詳細画面遷移
     public partial class Schedule : UserControl
     {
         private MainWindow mainWindow;
         private SQL sql = new SQL();
 
-        List<List<string>> items = new List<List<string>>();
-
+        private List<List<string>> items = new List<List<string>>();
+        private List<List<string>> category = new List<List<string>>();
+        private int[] para = new int[9]
+        {
+            1,0,2,0,0,0,0,2,1
+        };
         // チェックボタンリスト
         private List<Button> checkButtons = new List<Button>();
+        // コンテンツリスト
+        private List<Border> borders = new List<Border>();
 
         // ページのアイテム数
         private int item_cnt;
 
+        // 処理が終わるまで他の処理を行わない
+        private bool do_work = false;
+
+        // 日付表示の時の現在表示している日付
+        private DateTime setdate = DateTime.Now;
+        // カテゴリ表示の時の現在表示しているカテゴリの番地
+        private int setcategory = 0;
+        // 列
         private int row;
+        // SQL
+        private string comp_sql = "";
+
         public Schedule(MainWindow mainWindow)
         {
             InitializeComponent();
@@ -36,23 +55,230 @@ namespace _0J01021_中村快_S3
 
         private void Schedule_Loaded(object sender, RoutedEventArgs e)
         {
+            if (do_work) return;
+            else do_work = true;
+
+            // 全てを選択した状態にする
             comboBox1.SelectedIndex = 0;
+            // 一覧を表示する
             allRadioButton.IsChecked = true;
-            // 予定の項目のコンテンツ作成
+
+            Create_All();
+
+            do_work = false;
+        }
+
+        // 一覧表示
+        private void allRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (do_work) return;
+            else do_work = true;
+
             // SQLのデータをすべて取得
             string s = "SELECT * FROM dbo.todo ORDER BY Date";
-            items = sql.Data_Select(s);
-
+            items = sql.Data_SelectAll(s, para);
             // ページのアイテム数
             item_cnt = items.Count;
+
+            // nowButtonの設定
+            nowButton.Margin = new Thickness(0, 40, 0, 0);
+            nowButton.Content = "一覧";
+            nowButton.Width = 450;
+
+            // コンテンツを更新
+            Create_Content();
+
+            do_work = false;
+        }
+
+        // 日付表示
+        private void dateRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (do_work) return;
+            else do_work = true;
+
+            // 一覧で未完了または完了済みの状態で日付表示に切り替えたときにSQL文をWHEREからANDに置き換える
+            comp_sql = comp_sql.Replace("WHERE", "AND");
+            Create_Date();
+
+            do_work = false;
+        }
+
+        // カテゴリ表示
+        private void categoryRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (do_work) return;
+            else do_work = true;
+
+            // カテゴリを取得
+            category = new List<List<string>>();
+            int[] p = new int[1] { 0 };
+            string s = "SELECT DISTINCT Category FROM dbo.todo";
+            category = sql.Data_SelectAll(s, p);
+
+            // 一覧で未完了または完了済みの状態でカテゴリ表示に切り替えたときにSQL文をWHEREからANDに置き換える
+            comp_sql = comp_sql.Replace("WHERE", "AND");
+            Create_Category();
+
+            do_work = false;
+        }
+
+        // チェックボタンのクリックイベント
+        private void Checkbtn_Click(object sender, EventArgs e)
+        {
+            if (do_work) return;
+            else do_work = true;
+
+            string text = (string)((Button)sender).Content;
+            string comp = "0";
+
+            if (text != "✓")
+            {
+                ((Button)sender).Content = "✓";
+                comp = "1";
+            }
+            else
+            {
+                ((Button)sender).Content = "";
+                comp = "0";
+            }
+
+            // SQLにcompの内容を反映させる(0:未完了、1:完了)
+            foreach (var item in items)
+            {
+                if (((Button)sender).Name.ToString().Substring(8) == item[0])
+                {
+                    string oid = item[0];
+                    item[8] = comp;
+                    sql.Data_Update(item, oid);
+                }
+            }
+
+            do_work = false;
+        }
+
+        private void beforeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)dateRadioButton.IsChecked)
+            {
+                setdate = setdate.AddDays(-1);
+                Create_Date();
+            }
+            else if ((bool)categoryRadioButton.IsChecked)
+            {
+                if ((string)beforeButton.Content != "")
+                {
+                    setcategory--;
+                    Create_Category();
+                }
+            }
+        }
+
+        private void afterButton_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)dateRadioButton.IsChecked)
+            {
+                setdate = setdate.AddDays(1);
+                Create_Date();
+            }
+            else if ((bool)categoryRadioButton.IsChecked)
+            {
+                if ((string)afterButton.Content != "")
+                {
+                    setcategory++;
+                    Create_Category();
+                }
+            }
+        }
+
+        // setdateをdatePicker1で選んだ日付にする
+        private void datePicker1_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            setdate = (DateTime)datePicker1.SelectedDate;
+            Create_Date();
+        }
+
+        private void comboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // すべての場合
+            if (comboBox1.SelectedIndex == 0)
+            {
+                comp_sql = "";
+                if ((bool)allRadioButton.IsChecked)
+                {
+                    Create_All();
+                }
+                else if ((bool)dateRadioButton.IsChecked)
+                {
+                    Create_Date();
+                }
+                else if ((bool)categoryRadioButton.IsChecked)
+                {
+                    Create_Category();
+                }
+            }
+            // 未完了の場合
+            else if (comboBox1.SelectedIndex == 1)
+            {
+                comp_sql = "Comp = 0";
+                if ((bool)allRadioButton.IsChecked)
+                {
+                    comp_sql = "WHERE " + comp_sql;
+                    Create_All();
+                }
+                else if ((bool)dateRadioButton.IsChecked)
+                {
+                    comp_sql = "AND " + comp_sql;
+                    Create_Date();
+                }
+                else if ((bool)categoryRadioButton.IsChecked)
+                {
+                    comp_sql = "AND " + comp_sql;
+                    Create_Category();
+                }
+            }
+            // 完了済みの場合
+            else if (comboBox1.SelectedIndex == 2)
+            {
+                comp_sql = "Comp = 1";
+                if ((bool)allRadioButton.IsChecked)
+                {
+                    comp_sql = "WHERE " + comp_sql;
+                    Create_All();
+                }
+                else if ((bool)dateRadioButton.IsChecked)
+                {
+                    comp_sql = "AND " + comp_sql;
+                    Create_Date();
+                }
+                else if ((bool)categoryRadioButton.IsChecked)
+                {
+                    comp_sql = "AND " + comp_sql;
+                    Create_Category();
+                }
+            }
+        }
+
+        private void Create_Content()
+        {
+            // 既存のコンテンツを削除
+            foreach (var button in checkButtons)
+            {
+                contents.Children.Remove(button);
+            }
+            foreach (var border in borders)
+            {
+                contents.Children.Remove(border);
+            }
+            
             // 作成行の数
             row = 11;
-            if(item_cnt > row)
+            if (item_cnt > row)
             {
                 row = item_cnt;
             }
 
-            for(int i = 0; i < row; i++)
+            for (int i = 0; i < row; i++)
             {
                 checkbtn(i);
                 datelabel(i);
@@ -66,7 +292,7 @@ namespace _0J01021_中村快_S3
         {
             // 枠線の設定
             Border border = new Border();
-            border.Name = "doBorder" + n;
+            border.Name = "ditailBorder";
             border.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0xCE, 0xC3, 0xC3));
             border.BorderThickness = new Thickness(1);
             border.Height = 30;
@@ -80,10 +306,61 @@ namespace _0J01021_中村快_S3
 
             if (n < item_cnt)
             {
-                textBlock.Name = "hyperlink" + n;
+                textBlock.Name = "detailHyperlink";
                 textBlock.FontFamily = new FontFamily("UD Digi Kyokasho NK-R");
                 textBlock.FontSize = 16;
                 textBlock.Text = "詳細";
+                textBlock.TextAlignment = TextAlignment.Center;
+                textBlock.VerticalAlignment = VerticalAlignment.Center;
+                text.TextAlignment = TextAlignment.Center;
+                text.VerticalAlignment = VerticalAlignment.Center;
+                hyperlink.Click += DetailHyperlink_Click;    
+                hyperlink.Inlines.Add(textBlock);
+                text.Inlines.Add(hyperlink);
+            }
+
+            border.Child = text;
+            contents.Children.Add(border);
+            borders.Add(border);
+        }
+
+        // 詳細画面に画面を遷移する
+        private void DetailHyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        // やることの設定したリンクに飛ぶことができるようにする処理
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            // 設定したリンク先のURLに飛ぶ
+            var startInfo = new System.Diagnostics.ProcessStartInfo(e.Uri.ToString());
+            startInfo.UseShellExecute = true;
+            System.Diagnostics.Process.Start(startInfo);
+        }
+
+        // やること作成
+        private void dolabel(int n)
+        {
+            // 枠線の設定
+            Border border = new Border();
+            border.Name = "doBorder";
+            border.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0xCE, 0xC3, 0xC3));
+            border.BorderThickness = new Thickness(1);
+            border.Height = 30;
+            border.Width = 263;
+            border.Margin = new Thickness(120, (30 * n + 30), 0, 0);
+            // テキストの設定
+            Hyperlink hyperlink = new Hyperlink();
+            TextBlock textBlock = new TextBlock();
+            TextBlock text = new TextBlock();
+
+            if (n < item_cnt)
+            {
+                textBlock.Name = "doTextBlock";
+                textBlock.FontFamily = new FontFamily("UD Digi Kyokasho NK-R");
+                textBlock.FontSize = 12;
+                textBlock.Text = items[n][1];
                 textBlock.TextAlignment = TextAlignment.Center;
                 textBlock.VerticalAlignment = VerticalAlignment.Center;
                 text.TextAlignment = TextAlignment.Center;
@@ -105,58 +382,7 @@ namespace _0J01021_中村快_S3
 
             border.Child = text;
             contents.Children.Add(border);
-
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
-        {
-            // 設定したリンク先のURLに飛ぶ
-            var startInfo = new System.Diagnostics.ProcessStartInfo(e.Uri.ToString());
-            startInfo.UseShellExecute = true;
-            System.Diagnostics.Process.Start(startInfo);
-        }
-
-        // やること作成
-        private void dolabel(int n)
-        {
-            // 枠線の設定
-            Border border = new Border();
-            border.Name = "doBorder" + n;
-            border.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0xCE, 0xC3, 0xC3));
-            border.BorderThickness = new Thickness(1);
-            border.Height = 30;
-            border.Width = 263;
-            border.Margin = new Thickness(120, (30 * n + 30), 0, 0);
-            // テキストの設定
-            Hyperlink hyperlink = new Hyperlink();
-            TextBlock textBlock = new TextBlock();
-            TextBlock text = new TextBlock();
-
-            if (n < item_cnt)
-            {
-                textBlock.Name = "doTextBlock" + n;
-                textBlock.FontFamily = new FontFamily("UD Digi Kyokasho NK-R");
-                textBlock.FontSize = 12;
-                textBlock.Text = items[n][1];
-                textBlock.TextAlignment = TextAlignment.Center;
-                textBlock.VerticalAlignment = VerticalAlignment.Center;
-
-                // URLを設定していたらそのURLに飛べるようにする
-                if (items[n][5] != "")
-                {
-                    hyperlink.NavigateUri = new Uri(items[n][5]);
-                    hyperlink.RequestNavigate += Hyperlink_RequestNavigate;
-                    hyperlink.Inlines.Add(textBlock);
-                    text.Inlines.Add(hyperlink);
-                }
-                else
-                {
-                    text.Inlines.Add(textBlock);
-                }
-            }
-
-            border.Child = text;
-            contents.Children.Add(border);
+            borders.Add(border);
         }
 
         // 時間作成
@@ -164,7 +390,7 @@ namespace _0J01021_中村快_S3
         {
             // 枠線の設定
             Border border = new Border();
-            border.Name = "dateBorder" + n;
+            border.Name = "dateBorder";
             border.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0xCE, 0xC3, 0xC3));
             border.BorderThickness = new Thickness(1);
             border.Height = 30;
@@ -176,17 +402,19 @@ namespace _0J01021_中村快_S3
 
             if (n < item_cnt)
             {
-                textBlock.Name = "dateTextBlock" + n;
+                textBlock.Name = "dateTextBlock";
                 textBlock.FontFamily = new FontFamily("UD Digi Kyokasho NK-R");
-                textBlock.FontSize = 12;
-                string str = items[n][2].ToString();
-                DateTime date = new DateTime(int.Parse(str.Substring(0,4)), int.Parse(str.Substring(4, 2)), int.Parse(str.Substring(6,2)), int.Parse(str.Substring(8,2)), int.Parse(str.Substring(10,2)),int.Parse("00"));
+                
+                DateTime date = DateTime.Parse(items[n][2]);
                 if ((bool)allRadioButton.IsChecked || (bool)categoryRadioButton.IsChecked)
                 {
-                    textBlock.Text = date.Year + "/" + date.Month + "/" + date.Day;
-                }else if ((bool)dateRadioButton.IsChecked)
+                    textBlock.Text = date.ToString("yyyy/MM/dd");
+                    textBlock.FontSize = 10;
+                }
+                else if ((bool)dateRadioButton.IsChecked)
                 {
-                    textBlock.Text = date.Hour + ":" + date.Minute;
+                    textBlock.Text = date.ToString("HH:mm");
+                    textBlock.FontSize = 12;
                 }
                 
                 textBlock.TextAlignment = TextAlignment.Center;
@@ -195,6 +423,7 @@ namespace _0J01021_中村快_S3
             
             border.Child = textBlock;
             contents.Children.Add(border);
+            borders.Add(border);
         }
 
         // チェックボタン作成
@@ -202,7 +431,7 @@ namespace _0J01021_中村快_S3
         {
             Button button = new Button();
             // 名前
-            button.Name = "checkbtn" + n;
+            button.Name = "checkbtn";
             // 横幅
             button.Width = 50;
             // 縦幅
@@ -218,56 +447,108 @@ namespace _0J01021_中村快_S3
 
             if(n < item_cnt)
             {
+
+                // 名前
+                button.Name += items[n][0].ToString();
+                // チェックマーク
+                if (items[n][8] == "0")
+                {
+                    button.Content = "";
+                }
+                else
+                {
+                    button.Content = "✓";
+                }
                 // 文字のフォント
                 button.FontFamily = new FontFamily("UD Digi Kyokasho NK-R");
                 // フォントサイズ
                 button.FontSize = 16;
                 button.HorizontalAlignment = HorizontalAlignment.Left;
                 button.VerticalAlignment = VerticalAlignment.Top;
-                button.Click += (sender, e) => Checkbtn_Click(sender, e);
+                button.Click += Checkbtn_Click;
             }
             
             contents.Children.Add(button);
             checkButtons.Add(button);
         }
 
-        // チェックボタンのクリックイベント
-        private void Checkbtn_Click(object sender, EventArgs e)
+        private void Create_All()
         {
-            string text = (string)((Button)sender).Content;
-            if (text != "✓") ((Button)sender).Content = "✓";
-            else ((Button)sender).Content = "";
-        }
+            // datePikerの設定
+            datePicker1.Visibility = Visibility.Hidden;
 
-        // 一覧表示
-        private void allRadioButton_Checked(object sender, RoutedEventArgs e)
-        {
+            // nowButtonの設定
             nowButton.Margin = new Thickness(0, 40, 0, 0);
             nowButton.Content = "一覧";
             nowButton.Width = 450;
+
+            // SQLのデータをすべて取得
+            string s = "SELECT * FROM dbo.todo " + comp_sql + " ORDER BY Date";
+            items = sql.Data_SelectAll(s, para);
+            // ページのアイテム数
+            item_cnt = items.Count;
+            
+            // 予定の項目のコンテンツ作成
+            Create_Content();
         }
 
-        // 日付表示
-        private void dateRadioButton_Checked(object sender, RoutedEventArgs e)
+        private void Create_Date()
         {
-            DateTime date = DateTime.Now;
+            // datePikerの設定
+            datePicker1.Visibility = Visibility.Visible;
+            datePicker1.SelectedDate = setdate;
+            // nowButtonの設定
             nowButton.Margin = new Thickness(120, 40, 0, 0);
-            nowButton.Content = date.ToString("yyyy/MM/dd");
+            nowButton.Content = setdate.ToString("yyyy/MM/dd");
             nowButton.Width = 210;
-            beforeButton.Content = date.AddDays(-1).ToString("yyyy/MM/dd");
-            afterButton.Content = date.AddDays(1).ToString("yyyy/MM/dd");
+
+            beforeButton.Content = setdate.AddDays(-1).ToString("yyyy/MM/dd");
+            afterButton.Content = setdate.AddDays(1).ToString("yyyy/MM/dd");
+
+            // 日付が今日であるデータを取得
+            string s = "SELECT * FROM dbo.todo WHERE Date BETWEEN @serch1  AND @serch2 " + comp_sql + " ORDER BY Date";
+            items = sql.Data_Select(s, para, setdate.ToString("yyyy/MM/dd") + " 00:00:00", setdate.ToString("yyyy/MM/dd") + " 23:59:59");
+            // ページのアイテム数
+            item_cnt = items.Count;
+
+            // コンテンツを更新
+            Create_Content();
         }
 
-        // カテゴリ表示
-        private void categoryRadioButton_Checked(object sender, RoutedEventArgs e)
+        private void Create_Category()
         {
-            List<List<string>> category = new List<List<string>>();
-            string s = "SELECT DISTINCT Category FROM dbo.todo";
-            category = sql.Data_Select(s);
+            // datePikerの設定
+            datePicker1.Visibility = Visibility.Hidden;
+
             nowButton.Margin = new Thickness(120, 40, 0, 0);
-            nowButton.Content = category[1][0];
+            nowButton.Content = category[setcategory][0];
             nowButton.Width = 210;
-            beforeButton.Content = category[0][0];
+            if(setcategory >= 1)
+            {
+                beforeButton.Content = category[setcategory - 1][0];
+            }
+            else
+            {
+                beforeButton.Content = "";
+            }
+            
+            if (category.Count > 1 && setcategory + 1 < category.Count)
+            {
+                afterButton.Content = category[setcategory + 1][0];
+            }
+            else
+            {
+                afterButton.Content = "";
+            }
+
+            // 選択しているカテゴリのデータを取得
+            string s = "SELECT * FROM dbo.todo WHERE Category LIKE CONCAT('%',@serch1,'%') " + comp_sql + " ORDER BY Date";
+            items = sql.Data_Select(s, para, category[setcategory][0],"");
+            // ページのアイテム数
+            item_cnt = items.Count;
+
+            // コンテンツを更新
+            Create_Content();
         }
     }
 }

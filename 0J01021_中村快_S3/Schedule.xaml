@@ -62,7 +62,8 @@
             Margin="0,40,0,0"
             VerticalAlignment="Top"
             Width="120"
-            Height="30"/>
+            Height="30" 
+            Click="beforeButton_Click"/>
 
         <!--表示する日付またはカテゴリ-->
 
@@ -79,7 +80,7 @@
             Margin="330,40,0,0"
             VerticalAlignment="Top"
             Width="120"
-            Height="30"/>
+            Height="30" Click="afterButton_Click"/>
 
         <ComboBox
             x:Name="comboBox1"
@@ -87,7 +88,7 @@
             HorizontalAlignment="Left"
             Margin="335,10,0,0"
             VerticalAlignment="Top"
-            Width="105">
+            Width="105" SelectionChanged="comboBox1_SelectionChanged">
             <ComboBoxItem Content="すべて"/>
             <ComboBoxItem Content="未完了"/>
             <ComboBoxItem Content="完了済み"/>
@@ -175,8 +176,20 @@
             Margin="120,40,0,0"
             VerticalAlignment="Top"
             Width="210"
-            Height="30"/>
+            Height="30"
+            />
 
+        <DatePicker
+            Name="datePicker1"
+            HorizontalAlignment="Center"
+            Margin="0,40,0,0"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            VerticalAlignment="Top"
+            Width="210"
+            Height="30" 
+            SelectedDateChanged="datePicker1_SelectedDateChanged"
+            />
 
 
     </Grid>

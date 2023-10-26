@@ -16,15 +16,15 @@ namespace _0J01021_中村快_S3
 
         private List<string> datas_name = new List<string>()
         {
-            "@id","@do","@date","@category","@location","@url","@explanation","@alarm"
+            "@id","@do","@date","@category","@location","@url","@explanation","@alarm","@comp"
         };
         // パラメータの型　0：NVarChar、1：Int、2：DateTime
-        private int[] para = new int[8]
+        private int[] para = new int[9]
         {
-            1,0,2,0,0,0,0,2
+            1,0,2,0,0,0,0,2,1
         };
 
-        public List<List<string>> Data_Select(string s)
+        public List<List<string>> Data_SelectAll(string s, int[] para)
         {
             List<List<string>> data_list = new List<List<string>>();
 
@@ -65,7 +65,75 @@ namespace _0J01021_中村快_S3
                                 }
                                 else
                                 {
-                                    data = reader.GetDateTime(i).Date.ToString("yyyyMMddHHmm");
+                                    data = reader.GetDateTime(i).ToString("F");
+                                    row.Add(data);
+                                }
+                            }
+                            catch (SqlNullValueException) // nullの場合
+                            {
+                                row.Add("");
+                            }
+                        }
+
+                        data_list.Add(row);
+                    }
+                }
+                else // データが入っていない場合
+                {
+                    data_list.Clear();
+                }
+
+                command.Close();
+            }
+
+            return data_list;
+        }
+
+        public List<List<string>> Data_Select(string s, int[] para, string serch1,string serch2)
+        {
+            List<List<string>> data_list = new List<List<string>>();
+
+            using (var command = new SqlConnection(con))
+            {
+                command.Open();
+                var cmd = command.CreateCommand();
+                // SQL文の作成
+                cmd.CommandText = s;
+                
+                cmd.Parameters.Add(new SqlParameter("@serch1", serch1));
+                cmd.Parameters.Add(new SqlParameter("@serch2", serch2));
+
+                var SQL = new SqlDataAdapter(cmd);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                // データが入っているか判定
+                if (reader.HasRows)
+                {
+                    data_list.Clear();
+
+                    // データを読み取り、2次元リスト配列に追加
+                    while (reader.Read())
+                    {
+                        List<string> row = new List<string>();
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            // 列のインデックスに応じてデータ型を指定
+                            string data;
+                            try
+                            {
+                                if (para[i] == 0)
+                                {
+                                    data = reader.GetString(i);
+                                    row.Add(data);
+                                }
+                                else if (para[i] == 1)
+                                {
+                                    data = reader.GetInt32(i).ToString();
+                                    row.Add(data);
+                                }
+                                else
+                                {
+                                    data = reader.GetDateTime(i).ToString("F");
                                     row.Add(data);
                                 }
                             }
@@ -99,7 +167,7 @@ namespace _0J01021_中村快_S3
                 {
                     try
                     {
-                        string s = "INSERT INTO dbo.todo (Id,Do,Date,Category,Location,Url,Explanation,Alarm) VALUES (@id,@do,@date,@category,@location,@url,@explanation,@alarm)";
+                        string s = "INSERT INTO dbo.todo (Id,Do,Date,Category,Location,Url,Explanation,Alarm,Comp) VALUES (@id,@do,@date,@category,@location,@url,@explanation,@alarm,@comp)";
                         // データベースにデータを追加していく
                         using (SqlCommand cmd = new SqlCommand(s, command, transaction))
                         {
@@ -136,7 +204,7 @@ namespace _0J01021_中村快_S3
                 {
                     try
                     {
-                        string s = "UPDATE dbo.todo SET Id = @id,Do = @do,Date = @date,Category = @category,Location = @location,Url = @url,Explanation = @explanation,Alarm = @alarm";
+                        string s = "UPDATE dbo.todo SET Id = @id,Do = @do,Date = @date,Category = @category,Location = @location,Url = @url,Explanation = @explanation,Alarm = @alarm,Comp = @comp　WHERE Id = @oid";
                         // データベースにデータを追加していく
                         using (SqlCommand cmd = new SqlCommand(s, command, transaction))
                         {
@@ -226,8 +294,17 @@ namespace _0J01021_中村快_S3
             }
             else if (n == 2) // DateTime
             {
-                DateTime data = DateTime.Parse(str);
-                // NULLではない場合
+                DateTime data;
+                if (str == "") // 設定しない時
+                {
+                    data = new DateTime(1000, 1, 1, 0, 0, 0);
+                }
+                else
+                {
+                    data = DateTime.Parse(str);
+                }
+                
+                // 1000年に設定されているものはNULL扱い
                 if (data.Year > 1000)
                 {
                     cmd.Parameters.Add(name, SqlDbType.DateTime).Value = data;
@@ -235,18 +312,6 @@ namespace _0J01021_中村快_S3
                 else // NULLの場合
                 {
                     cmd.Parameters.Add(name, SqlDbType.DateTime).Value = SqlDateTime.Null;
-                }
-            }
-            else if (n == 3) // NChar
-            {
-                // NULLではない場合
-                if (str != "")
-                {
-                    cmd.Parameters.Add(name, SqlDbType.NChar).Value = str;
-                }
-                else // NULLの場合
-                {
-                    cmd.Parameters.Add(name, SqlDbType.NChar).Value = SqlString.Null;
                 }
             }
         }

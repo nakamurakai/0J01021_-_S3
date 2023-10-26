@@ -35,7 +35,6 @@ namespace _0J01021_中村快_S3
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             formPanel.Children.Add(schedule);
-            this.Title = "横:" + this.Width + "," + this.Height;
 
         }
 
