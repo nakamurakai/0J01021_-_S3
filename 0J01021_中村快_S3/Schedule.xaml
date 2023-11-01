@@ -8,7 +8,7 @@
              d:DesignHeight="480"
              d:DesignWidth="450"
              Background="White"
-             Loaded="Schedule_Loaded">
+             Loaded="Schedule_Loaded" IsVisibleChanged="UserControl_IsVisibleChanged">
     <Grid>
 
         <!--日付を基準-->

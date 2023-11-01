@@ -167,14 +167,14 @@ namespace _0J01021_中村快_S3
                 {
                     try
                     {
-                        string s = "INSERT INTO dbo.todo (Id,Do,Date,Category,Location,Url,Explanation,Alarm,Comp) VALUES (@id,@do,@date,@category,@location,@url,@explanation,@alarm,@comp)";
+                        string s = "INSERT INTO dbo.todo (Do,Date,Category,Location,Url,Explanation,Alarm,Comp) VALUES (@do,@date,@category,@location,@url,@explanation,@alarm,@comp)";
                         // データベースにデータを追加していく
                         using (SqlCommand cmd = new SqlCommand(s, command, transaction))
                         {
                             // パラメータ追加(何も設定されていなければNULLを入れる)
                             for (int i = 0; i < datas.Count; i++)
                             {
-                                Parameters_Add(cmd, datas[i], datas_name[i], para[i]);
+                                Parameters_Add(cmd, datas[i], datas_name[i + 1], para[i + 1]);
                             }
                             cmd.ExecuteNonQuery();
 

@@ -74,19 +74,7 @@ namespace _0J01021_中村快_S3
             if (do_work) return;
             else do_work = true;
 
-            // SQLのデータをすべて取得
-            string s = "SELECT * FROM dbo.todo ORDER BY Date";
-            items = sql.Data_SelectAll(s, para);
-            // ページのアイテム数
-            item_cnt = items.Count;
-
-            // nowButtonの設定
-            nowButton.Margin = new Thickness(0, 40, 0, 0);
-            nowButton.Content = "一覧";
-            nowButton.Width = 450;
-
-            // コンテンツを更新
-            Create_Content();
+            Create_All();
 
             do_work = false;
         }
@@ -327,7 +315,7 @@ namespace _0J01021_中村快_S3
         // 詳細画面に画面を遷移する
         private void DetailHyperlink_Click(object sender, RoutedEventArgs e)
         {
-            
+            mainWindow.Detail_Form(true);
         }
 
         // やることの設定したリンクに飛ぶことができるようにする処理
@@ -409,6 +397,7 @@ namespace _0J01021_中村快_S3
                 if ((bool)allRadioButton.IsChecked || (bool)categoryRadioButton.IsChecked)
                 {
                     textBlock.Text = date.ToString("yyyy/MM/dd");
+                    textBlock.ToolTip = date.ToString("HH:mm");
                     textBlock.FontSize = 10;
                 }
                 else if ((bool)dateRadioButton.IsChecked)
@@ -549,6 +538,42 @@ namespace _0J01021_中村快_S3
 
             // コンテンツを更新
             Create_Content();
+        }
+
+        private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (do_work) return;
+            else do_work = true;
+
+            if (this.IsVisible)
+            {
+                // カテゴリを取得し、カテゴリが何もなかった場合カテゴリ表示をできなくする
+                category = new List<List<string>>();
+                int[] p = new int[1] { 0 };
+                string s = "SELECT DISTINCT Category FROM dbo.todo";
+                category = sql.Data_SelectAll(s, p);
+
+                if(category.Count > 0) categoryRadioButton.IsEnabled = true;
+                else categoryRadioButton.IsEnabled = false;
+
+                // 内容の更新
+                if ((bool)allRadioButton.IsChecked)
+                {
+                    Create_All();
+                }else if((bool)dateRadioButton.IsChecked)
+                {
+                    // 一覧で未完了または完了済みの状態で日付表示に切り替えたときにSQL文をWHEREからANDに置き換える
+                    comp_sql = comp_sql.Replace("WHERE", "AND");
+                    Create_Date();
+                }else if ((bool)categoryRadioButton.IsChecked)
+                {
+                    // 一覧で未完了または完了済みの状態でカテゴリ表示に切り替えたときにSQL文をWHEREからANDに置き換える
+                    comp_sql = comp_sql.Replace("WHERE", "AND");
+                    Create_Category();
+                }
+
+            }
+            do_work = false;
         }
     }
 }

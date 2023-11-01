@@ -22,9 +22,9 @@
             HorizontalAlignment="Left"
             Margin="0,0,0,0"
             VerticalAlignment="Top"
-            Width="150"
+            Width="225"
             Height="40"
-            Background="#FFF5B199"/>
+            Background="#FFF89C7B"/>
 
         <!--追加ボタン-->
         <Button
@@ -34,23 +34,10 @@
             FontSize="16"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Width="150"
+            Width="225"
             Height="40"
-            Background="#FFF5B199"
-            Margin="150,0,0,0"/>
-
-        <!--設定ボタン-->
-        <Button
-            Name="configButton"
-            Content="設定"
-            FontFamily="UD Digi Kyokasho NK-R"
-            FontSize="16"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Width="150"
-            Height="40"
-            Background="#FFF5B199"
-            Margin="300,0,0,0"/>
+            Background="#FFF89C7B"
+            Margin="225,0,0,0" Click="addButton_Click"/>
 
         <!--フォームパネル-->
         <Canvas 

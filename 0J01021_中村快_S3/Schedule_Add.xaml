@@ -1,0 +1,281 @@
+﻿<UserControl x:Class="_0J01021_中村快_S3.Schedule_Add"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:_0J01021_中村快_S3"
+             mc:Ignorable="d" 
+             d:DesignHeight="450"
+             d:DesignWidth="450"
+             Background="White" Loaded="UserControl_Loaded">
+    <Grid IsVisibleChanged="Grid_IsVisibleChanged">
+        <!--追加ボタン-->
+        <Button 
+            x:Name="addButton"
+            Background="#F89C7B"
+            Content="追加"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left" 
+            Margin="30,10,0,0"
+            VerticalAlignment="Top"
+            Height="30"
+            Width="100" Click="addButton_Click"/>
+
+
+        <TextBlock 
+            Text="アラーム"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            Width="70"
+            Height="20"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            TextAlignment="Center"
+            Margin="250,15,0,0"/>
+
+        <!--アラームの設定時間-->
+        <ComboBox
+            x:Name="alarmComboBox"
+            Background="#FFFFFF"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="12"
+            HorizontalAlignment="Left"
+            Margin="335,15,0,0"
+            VerticalAlignment="Top"
+            Width="80" 
+            Height="20">
+            <ComboBoxItem Content="設定しない"/>
+            <ComboBoxItem Content="5分前"/>
+            <ComboBoxItem Content="10分前"/>
+            <ComboBoxItem Content="15分前" IsSelected="True"/>
+            <ComboBoxItem Content="30分前"/>
+            <ComboBoxItem Content="1時間前"/>
+            <ComboBoxItem Content="3時間前"/>
+            <ComboBoxItem Content="12時間前"/>
+            <ComboBoxItem Content="1日前"/>
+            <ComboBoxItem Content="7日前"/>
+        </ComboBox>
+
+        <!--内容-->
+        <RichTextBox 
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="16"
+            Margin="50,73,0,0"
+            Width="70"
+            Height="20"
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Top"
+            BorderThickness="0">
+            <FlowDocument>
+                <Paragraph >
+                    <Span Foreground="Red">*</Span> 内容
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+        <TextBox 
+            x:Name="doText"
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="130,70,0,0" 
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="270"
+            Height="25" LostFocus="doText_LostFocus"/>
+        
+        <TextBlock
+            x:Name="warningText1"
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="10"
+            Text="内容が入力されていません"
+            TextAlignment="Right"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Visibility="Hidden"
+            Foreground="Red"
+            Margin="0,95,50,0"
+            Width="120"
+            Height="10"
+            />
+
+        <!--日付-->
+        <RichTextBox 
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="16"
+            Margin="50,133,0,0"
+            Width="70"
+            Height="20"
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Top"
+            BorderThickness="0">
+            <FlowDocument>
+                <Paragraph >
+                    <Span Foreground="Red">
+                        <Run Text="*"/>
+                    </Span>
+                    <Run Text="日時"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+        <DatePicker 
+            x:Name="dateText"
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="16"
+            HorizontalAlignment="Left" 
+            Margin="130,130,0,0"
+            VerticalAlignment="Top"
+            Width="170"
+            Height="25"/>
+
+        <!--時間-->
+        <ComboBox
+            x:Name="hourComboBox"
+            Background="#FFFFFF"
+            BorderThickness="0"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="300,130,0,0"
+            VerticalAlignment="Top"
+            Width="50" 
+            Height="25">
+            <ComboBoxItem Content="00" IsSelected="True"/>
+        </ComboBox>
+
+        <TextBlock
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text=":"
+            Width="10"
+            Height="20"
+            Margin="345,133,0,0"/>
+
+        <ComboBox
+            x:Name="minutesComboBox"
+            Background="#FFFFFF"
+            BorderThickness="0"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="350,130,0,0"
+            VerticalAlignment="Top"
+            Width="50" 
+            Height="25">
+            <ComboBoxItem Content="00" IsSelected="True"/>
+        </ComboBox>
+
+        <!--カテゴリ-->
+        <RichTextBox 
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="16"
+            Margin="40,193,0,0"
+            Width="90"
+            Height="20"
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Top"
+            BorderThickness="0">
+            <FlowDocument>
+                <Paragraph >
+                    <Span Foreground="Red">*</Span> カテゴリ
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+        <ComboBox
+            x:Name="categoryComboBox"
+            Background="#FFFFFF"
+            BorderThickness="1"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="130,190,0,0"
+            VerticalAlignment="Top"
+            IsEditable="True"
+            Width="270" 
+            Height="25" LostFocus="categoryComboBox_LostFocus">
+        </ComboBox>
+
+        <TextBlock
+            x:Name="warningText2"
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="10"
+            Text="内容が入力されていません"
+            TextAlignment="Right"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Visibility="Hidden"
+            Foreground="Red"
+            Margin="0,215,50,0"
+            Width="120"
+            Height="10"
+            />
+        
+        <!--場所-->
+        <TextBlock 
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            Text="場所"
+            TextAlignment="Center"
+            Margin="40,253,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Width="90"/>
+        <TextBox 
+            x:Name="locationText"
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="130,250,0,0" 
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="270"
+            Height="25"/>
+
+        <!--URL-->
+        <TextBlock 
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            Text="URL"
+            TextAlignment="Center"
+            Margin="40,313,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Width="90"/>
+        <TextBox 
+            x:Name="urlText"
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="130,310,0,0" 
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="270"
+            Height="25"/>
+
+        <!--説明-->
+        <TextBlock 
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            Text="説明"
+            TextAlignment="Center"
+            Margin="40,386,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Width="90"/>
+        <TextBox 
+            x:Name="explanationText"
+            FontFamily="UD Digi Kyokasho NK-R" 
+            FontSize="16"
+            HorizontalAlignment="Left"
+            Margin="130,370,0,0" 
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="270"
+            Height="50"/>
+    </Grid>
+</UserControl>
