@@ -138,7 +138,15 @@ namespace _0J01021_中村快_S3
                 {
                     string oid = item[0];
                     item[8] = comp;
-                    sql.Data_Update(item, oid);
+                    List<string> data = new List<string>();
+                    for (int i = 1; i < item.Count; i++)
+                    {
+                        data.Add(item[i].ToString());
+                    }
+                    if(sql.Data_Update(data, oid) == false)
+                    {
+                        MessageBox.Show("エラーが発生しました");
+                    }
                 }
             }
 
@@ -294,14 +302,16 @@ namespace _0J01021_中村快_S3
 
             if (n < item_cnt)
             {
-                textBlock.Name = "detailHyperlink";
                 textBlock.FontFamily = new FontFamily("UD Digi Kyokasho NK-R");
                 textBlock.FontSize = 16;
                 textBlock.Text = "詳細";
                 textBlock.TextAlignment = TextAlignment.Center;
                 textBlock.VerticalAlignment = VerticalAlignment.Center;
+
                 text.TextAlignment = TextAlignment.Center;
                 text.VerticalAlignment = VerticalAlignment.Center;
+
+                hyperlink.Name = "detailHyperlink" + items[n][0];
                 hyperlink.Click += DetailHyperlink_Click;    
                 hyperlink.Inlines.Add(textBlock);
                 text.Inlines.Add(hyperlink);
@@ -315,7 +325,11 @@ namespace _0J01021_中村快_S3
         // 詳細画面に画面を遷移する
         private void DetailHyperlink_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.Detail_Form(true);
+            // 表示するデータ
+            string serch1 = ((Hyperlink)sender).Name.Substring(15);
+            string s = "SELECT * FROM dbo.todo WHERE Id = @serch1";
+            List<List<string>> datas = sql.Data_Select(s,para,serch1,"");
+            mainWindow.Detail_Open(datas[0]);
         }
 
         // やることの設定したリンクに飛ぶことができるようにする処理
@@ -351,6 +365,7 @@ namespace _0J01021_中村快_S3
                 textBlock.Text = items[n][1];
                 textBlock.TextAlignment = TextAlignment.Center;
                 textBlock.VerticalAlignment = VerticalAlignment.Center;
+                textBlock.ToolTip = "内容: " + items[n][1] + "\nカテゴリ: " + items[n][3] + "\n場所: " + items[n][4] + "\n説明: " + items[n][6] + "\nアラーム: " + items[n][7];
                 text.TextAlignment = TextAlignment.Center;
                 text.VerticalAlignment = VerticalAlignment.Center;
 

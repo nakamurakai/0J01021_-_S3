@@ -26,6 +26,9 @@ namespace _0J01021_中村快_S3
         private bool change = false;
         public bool Change {set { change = value; } }
 
+        private List<string> item = new List<string>();
+        public List<string> Data { set { item = value; } }
+
         public Schedule_Add(MainWindow mainWindow)
         {
             InitializeComponent();
@@ -47,7 +50,7 @@ namespace _0J01021_中村快_S3
             }
         }
 
-        // 追加ボタン
+        // 追加・変更ボタン
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
             List<string> data = new List<string>();
@@ -99,15 +102,15 @@ namespace _0J01021_中村快_S3
             if (alarmComboBox.SelectedIndex == 0) data.Add("");
             else
             {
-                if (alarmComboBox.SelectedIndex == 1) date.AddMinutes(-5);
-                else if (alarmComboBox.SelectedIndex == 2) date.AddMinutes(-10);
-                else if (alarmComboBox.SelectedIndex == 3) date.AddMinutes(-15);
-                else if (alarmComboBox.SelectedIndex == 4) date.AddMinutes(-30);
-                else if (alarmComboBox.SelectedIndex == 5) date.AddHours(-1);
-                else if (alarmComboBox.SelectedIndex == 6) date.AddHours(-3);
-                else if (alarmComboBox.SelectedIndex == 7) date.AddHours(-12);
-                else if (alarmComboBox.SelectedIndex == 8) date.AddDays(-1);
-                else if (alarmComboBox.SelectedIndex == 9) date.AddDays(-7);
+                if (alarmComboBox.SelectedIndex == 1) date = date.AddMinutes(-5);
+                else if (alarmComboBox.SelectedIndex == 2) date = date.AddMinutes(-10);
+                else if (alarmComboBox.SelectedIndex == 3) date = date.AddMinutes(-15);
+                else if (alarmComboBox.SelectedIndex == 4) date = date.AddMinutes(-30);
+                else if (alarmComboBox.SelectedIndex == 5) date = date.AddHours(-1);
+                else if (alarmComboBox.SelectedIndex == 6) date = date.AddHours(-3);
+                else if (alarmComboBox.SelectedIndex == 7) date = date.AddHours(-12);
+                else if (alarmComboBox.SelectedIndex == 8) date = date.AddDays(-1);
+                else if (alarmComboBox.SelectedIndex == 9) date = date.AddDays(-7);
 
                 data.Add(date.ToString("G"));
             }
@@ -115,14 +118,40 @@ namespace _0J01021_中村快_S3
             // 完了済みかどうか
             data.Add("0");
 
-            if (sql.Data_Insert(data)) // データ挿入が出来た場合
+            // 変更の場合
+            if (change)
             {
-                MessageBox.Show("データの登録が完了しました");
+                if (sql.Data_Update(data, item[0])) // データ更新が出来た場合
+                {
+                    MessageBox.Show("データの変更が完了しました");
+                }
+                else
+                {
+                    MessageBox.Show("データの変更に失敗しました");
+                }
             }
-            else // 出来なかった場合
+            else
             {
-                MessageBox.Show("データの登録に失敗しました");
+                if (sql.Data_Insert(data)) // データ挿入が出来た場合
+                {
+                    MessageBox.Show("データの登録が完了しました");
+                }
+                else // 出来なかった場合
+                {
+                    MessageBox.Show("データの登録に失敗しました");
+                }
             }
+            
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("このデータを削除しますが本当によろしいですか", "Information", MessageBoxButton.YesNo) == MessageBoxResult.No) return; 
+            string s = "DELETE FROM dbo.todo WHERE Id = @id";
+
+            sql.Delete(s, item[0], "@id");
+            
+            mainWindow.Detail_Close();
         }
 
         // 内容テキストでフォーカスが離れたときに内容が入力されていなかったらメッセージを表示し枠線の色を変える
@@ -160,17 +189,30 @@ namespace _0J01021_中村快_S3
         {
             if (this.IsVisible)
             {
+                categoryComboBox_ItemAdd();
+                // 変更画面の時
                 if (change)
                 {
-
+                    addButton.Content = "変更";
+                    deleteButton.Visibility = Visibility.Visible;
+                    doText.Text = item[1];
+                    DateTime date = DateTime.Parse(item[2]);
+                    dateText.SelectedDate = date;
+                    hourComboBox.Text = date.ToString("HH");
+                    minutesComboBox.Text = date.ToString("mm");
+                    categoryComboBox.Text = item[3];
+                    locationText.Text = item[4];
+                    urlText.Text = item[5];
+                    explanationText.Text = item[6];
                 }
-                else
+                else // データ追加の時
                 {
+                    addButton.Content = "追加";
+                    deleteButton.Visibility = Visibility.Hidden;
                     doText.Text = "";
                     dateText.SelectedDate = DateTime.Now;
                     hourComboBox.SelectedIndex = 0;
                     minutesComboBox.SelectedIndex = 0;
-                    categoryComboBox_ItemAdd();
                     locationText.Text = "";
                     urlText.Text = "";
                     explanationText.Text = "";
@@ -193,7 +235,8 @@ namespace _0J01021_中村快_S3
                 {
                     categoryComboBox.Items.Add(item[0]);
                 }
-            }            
+            }
+            categoryComboBox.SelectedIndex = 0;
         }
     }
 }

@@ -204,14 +204,14 @@ namespace _0J01021_中村快_S3
                 {
                     try
                     {
-                        string s = "UPDATE dbo.todo SET Id = @id,Do = @do,Date = @date,Category = @category,Location = @location,Url = @url,Explanation = @explanation,Alarm = @alarm,Comp = @comp　WHERE Id = @oid";
+                        string s = "UPDATE dbo.todo SET Do = @do,Date = @date,Category = @category,Location = @location,Url = @url,Explanation = @explanation,Alarm = @alarm,Comp = @comp　WHERE Id = @oid";
                         // データベースにデータを追加していく
                         using (SqlCommand cmd = new SqlCommand(s, command, transaction))
                         {
                             // パラメータ追加(何も設定されていなければNULLを入れる)
                             for (int i = 0; i < datas.Count; i++)
                             {
-                                Parameters_Add(cmd, datas[i], datas_name[i], para[i]);
+                                Parameters_Add(cmd, datas[i], datas_name[i + 1], para[i + 1]);
                             }
                             cmd.Parameters.Add(new SqlParameter("@oid", oid));
 
@@ -234,7 +234,7 @@ namespace _0J01021_中村快_S3
         }
 
         // 該当のデータの削除
-        public void Delete(string s, List<string> datas, List<string> datas_name)
+        public void Delete(string s, string datas,string datas_name)
         {
             try
             {
@@ -248,11 +248,8 @@ namespace _0J01021_中村快_S3
                     // データ削除のSQLを実行します。
                     cmd.CommandText = s;
                     // パラメータ追加(何も設定されていなければNULLを入れる)
-                    for (int i = 0; i < datas.Count; i++)
-                    {
-                        cmd.Parameters.Add(new SqlParameter(datas_name[i], datas[i]));
-                    }
-
+                    cmd.Parameters.Add(new SqlParameter(datas_name, datas));
+                    
                     cmd.ExecuteNonQuery();
                 }
             }

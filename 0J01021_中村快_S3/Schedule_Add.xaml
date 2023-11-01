@@ -32,7 +32,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             TextAlignment="Center"
-            Margin="250,15,0,0"/>
+            Margin="140,15,0,0"/>
 
         <!--アラームの設定時間-->
         <ComboBox
@@ -41,7 +41,7 @@
             FontFamily="UD Digi Kyokasho NK-R"
             FontSize="12"
             HorizontalAlignment="Left"
-            Margin="335,15,0,0"
+            Margin="225,15,0,0"
             VerticalAlignment="Top"
             Width="80" 
             Height="20">
@@ -77,13 +77,15 @@
         <TextBox 
             x:Name="doText"
             FontFamily="UD Digi Kyokasho NK-R" 
-            FontSize="16"
+            FontSize="20"
             HorizontalAlignment="Left"
             Margin="130,70,0,0" 
             TextWrapping="Wrap"
+            TextAlignment="Justify"
             VerticalAlignment="Top"
             Width="270"
-            Height="25" LostFocus="doText_LostFocus"/>
+            Height="25" 
+            LostFocus="doText_LostFocus"/>
         
         <TextBlock
             x:Name="warningText1"
@@ -191,13 +193,14 @@
             Background="#FFFFFF"
             BorderThickness="1"
             FontFamily="UD Digi Kyokasho NK-R"
-            FontSize="16"
+            FontSize="20"
             HorizontalAlignment="Left"
             Margin="130,190,0,0"
             VerticalAlignment="Top"
             IsEditable="True"
             Width="270" 
-            Height="25" LostFocus="categoryComboBox_LostFocus">
+            Height="25"
+            LostFocus="categoryComboBox_LostFocus">
         </ComboBox>
 
         <TextBlock
@@ -228,7 +231,7 @@
         <TextBox 
             x:Name="locationText"
             FontFamily="UD Digi Kyokasho NK-R" 
-            FontSize="16"
+            FontSize="20"
             HorizontalAlignment="Left"
             Margin="130,250,0,0" 
             TextWrapping="Wrap"
@@ -251,8 +254,7 @@
             FontFamily="UD Digi Kyokasho NK-R" 
             FontSize="16"
             HorizontalAlignment="Left"
-            Margin="130,310,0,0" 
-            TextWrapping="Wrap"
+            Margin="130,310,0,0"
             VerticalAlignment="Top"
             Width="270"
             Height="25"/>
@@ -270,12 +272,24 @@
         <TextBox 
             x:Name="explanationText"
             FontFamily="UD Digi Kyokasho NK-R" 
-            FontSize="16"
+            FontSize="20"
             HorizontalAlignment="Left"
             Margin="130,370,0,0" 
             TextWrapping="Wrap"
             VerticalAlignment="Top"
             Width="270"
             Height="50"/>
+        <Button 
+            x:Name="deleteButton"
+            Background="#FF0000"
+            Foreground="White"
+            Content="削除"
+            FontFamily="UD Digi Kyokasho NK-R"
+            FontSize="16"
+            HorizontalAlignment="Left" 
+            Margin="330,10,0,0"
+            VerticalAlignment="Top"
+            Height="30"
+            Width="100" Click="deleteButton_Click"/>
     </Grid>
 </UserControl>
