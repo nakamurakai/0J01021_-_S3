@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
-using System.Diagnostics;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using static System.Net.Mime.MediaTypeNames;
-using System.Globalization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Windows.Shapes;
 
 namespace _0J01021_中村快_S3
 {
     /// <summary>
-    /// Schedule.xaml の相互作用ロジック
+    /// Schedule_UserControl.xaml の相互作用ロジック
     /// </summary>
-    /// 次やること：330行目の詳細画面遷移
-    public partial class Schedule : UserControl
+    public partial class Schedule_UserControl : UserControl
     {
         private MainWindow mainWindow;
         private SQL sql = new SQL();
@@ -47,13 +47,13 @@ namespace _0J01021_中村快_S3
         // SQL
         private string comp_sql = "";
 
-        public Schedule(MainWindow mainWindow)
+        public Schedule_UserControl(MainWindow mainWindow)
         {
             InitializeComponent();
             this.mainWindow = mainWindow;
         }
 
-        private void Schedule_Loaded(object sender, RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (do_work) return;
             else do_work = true;
@@ -143,7 +143,7 @@ namespace _0J01021_中村快_S3
                     {
                         data.Add(item[i].ToString());
                     }
-                    if(sql.Data_Update(data, oid) == false)
+                    if (sql.Data_Update(data, oid) == false)
                     {
                         MessageBox.Show("エラーが発生しました");
                     }
@@ -266,7 +266,7 @@ namespace _0J01021_中村快_S3
             {
                 contents.Children.Remove(border);
             }
-            
+
             // 作成行の数
             row = 11;
             if (item_cnt > row)
@@ -312,7 +312,7 @@ namespace _0J01021_中村快_S3
                 text.VerticalAlignment = VerticalAlignment.Center;
 
                 hyperlink.Name = "detailHyperlink" + items[n][0];
-                hyperlink.Click += DetailHyperlink_Click;    
+                hyperlink.Click += DetailHyperlink_Click;
                 hyperlink.Inlines.Add(textBlock);
                 text.Inlines.Add(hyperlink);
             }
@@ -328,7 +328,7 @@ namespace _0J01021_中村快_S3
             // 表示するデータ
             string serch1 = ((Hyperlink)sender).Name.Substring(15);
             string s = "SELECT * FROM dbo.todo WHERE Id = @serch1";
-            List<List<string>> datas = sql.Data_Select(s,para,serch1,"");
+            List<List<string>> datas = sql.Data_Select(s, para, serch1, "");
             mainWindow.Detail_Open(datas[0]);
         }
 
@@ -398,7 +398,7 @@ namespace _0J01021_中村快_S3
             border.BorderThickness = new Thickness(1);
             border.Height = 30;
             border.Width = 70;
-            border.Margin = new Thickness(50,(30 * n + 30),0,0);
+            border.Margin = new Thickness(50, (30 * n + 30), 0, 0);
 
             // テキストの設定
             TextBlock textBlock = new TextBlock();
@@ -407,7 +407,7 @@ namespace _0J01021_中村快_S3
             {
                 textBlock.Name = "dateTextBlock";
                 textBlock.FontFamily = new FontFamily("UD Digi Kyokasho NK-R");
-                
+
                 DateTime date = DateTime.Parse(items[n][2]);
                 if ((bool)allRadioButton.IsChecked || (bool)categoryRadioButton.IsChecked)
                 {
@@ -420,11 +420,11 @@ namespace _0J01021_中村快_S3
                     textBlock.Text = date.ToString("HH:mm");
                     textBlock.FontSize = 12;
                 }
-                
+
                 textBlock.TextAlignment = TextAlignment.Center;
                 textBlock.VerticalAlignment = VerticalAlignment.Center;
             }
-            
+
             border.Child = textBlock;
             contents.Children.Add(border);
             borders.Add(border);
@@ -441,7 +441,7 @@ namespace _0J01021_中村快_S3
             // 縦幅
             button.Height = 30;
             // 位置
-            button.Margin = new Thickness(0,(n * 30 + 30),0,0);
+            button.Margin = new Thickness(0, (n * 30 + 30), 0, 0);
             // 背景色
             button.Background = Brushes.White;
             // 枠線の色
@@ -449,7 +449,7 @@ namespace _0J01021_中村快_S3
             // 枠線の太さ
             button.BorderThickness = new Thickness(1, 1, 1, 1);
 
-            if(n < item_cnt)
+            if (n < item_cnt)
             {
 
                 // 名前
@@ -471,7 +471,7 @@ namespace _0J01021_中村快_S3
                 button.VerticalAlignment = VerticalAlignment.Top;
                 button.Click += Checkbtn_Click;
             }
-            
+
             contents.Children.Add(button);
             checkButtons.Add(button);
         }
@@ -491,7 +491,7 @@ namespace _0J01021_中村快_S3
             items = sql.Data_SelectAll(s, para);
             // ページのアイテム数
             item_cnt = items.Count;
-            
+
             // 予定の項目のコンテンツ作成
             Create_Content();
         }
@@ -527,7 +527,7 @@ namespace _0J01021_中村快_S3
             nowButton.Margin = new Thickness(120, 40, 0, 0);
             nowButton.Content = category[setcategory][0];
             nowButton.Width = 210;
-            if(setcategory >= 1)
+            if (setcategory >= 1)
             {
                 beforeButton.Content = category[setcategory - 1][0];
             }
@@ -535,7 +535,7 @@ namespace _0J01021_中村快_S3
             {
                 beforeButton.Content = "";
             }
-            
+
             if (category.Count > 1 && setcategory + 1 < category.Count)
             {
                 afterButton.Content = category[setcategory + 1][0];
@@ -547,7 +547,7 @@ namespace _0J01021_中村快_S3
 
             // 選択しているカテゴリのデータを取得
             string s = "SELECT * FROM dbo.todo WHERE Category LIKE CONCAT('%',@serch1,'%') " + comp_sql + " ORDER BY Date";
-            items = sql.Data_Select(s, para, category[setcategory][0],"");
+            items = sql.Data_Select(s, para, category[setcategory][0], "");
             // ページのアイテム数
             item_cnt = items.Count;
 
@@ -555,7 +555,7 @@ namespace _0J01021_中村快_S3
             Create_Content();
         }
 
-        private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void UserControl_IsVisibleChanged_1(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (do_work) return;
             else do_work = true;
@@ -568,19 +568,21 @@ namespace _0J01021_中村快_S3
                 string s = "SELECT DISTINCT Category FROM dbo.todo";
                 category = sql.Data_SelectAll(s, p);
 
-                if(category.Count > 0) categoryRadioButton.IsEnabled = true;
+                if (category.Count > 0) categoryRadioButton.IsEnabled = true;
                 else categoryRadioButton.IsEnabled = false;
 
                 // 内容の更新
                 if ((bool)allRadioButton.IsChecked)
                 {
                     Create_All();
-                }else if((bool)dateRadioButton.IsChecked)
+                }
+                else if ((bool)dateRadioButton.IsChecked)
                 {
                     // 一覧で未完了または完了済みの状態で日付表示に切り替えたときにSQL文をWHEREからANDに置き換える
                     comp_sql = comp_sql.Replace("WHERE", "AND");
                     Create_Date();
-                }else if ((bool)categoryRadioButton.IsChecked)
+                }
+                else if ((bool)categoryRadioButton.IsChecked)
                 {
                     // 一覧で未完了または完了済みの状態でカテゴリ表示に切り替えたときにSQL文をWHEREからANDに置き換える
                     comp_sql = comp_sql.Replace("WHERE", "AND");

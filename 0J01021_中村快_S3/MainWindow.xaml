@@ -9,6 +9,7 @@
         Height="508"
         Width="465"
         Loaded="MainWindow_Loaded">
+    
 
     <Grid Margin="0,0,0,0" Height="500" Width="450">
         <!--ナビゲーション-->

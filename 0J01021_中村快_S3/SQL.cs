@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Windows.UI.Notifications;
 
 namespace _0J01021_中村快_S3
 {
@@ -234,7 +235,7 @@ namespace _0J01021_中村快_S3
         }
 
         // 該当のデータの削除
-        public void Delete(string s, string datas,string datas_name)
+        public void Delete(string s, string id,string id_name)
         {
             try
             {
@@ -248,9 +249,10 @@ namespace _0J01021_中村快_S3
                     // データ削除のSQLを実行します。
                     cmd.CommandText = s;
                     // パラメータ追加(何も設定されていなければNULLを入れる)
-                    cmd.Parameters.Add(new SqlParameter(datas_name, datas));
+                    cmd.Parameters.Add(new SqlParameter(id_name, id));
                     
                     cmd.ExecuteNonQuery();
+
                 }
             }
             catch (Exception ex)

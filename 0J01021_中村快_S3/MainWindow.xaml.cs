@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,7 @@ namespace _0J01021_中村快_S3
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Schedule schedule;
+        private Schedule_UserControl schedule;
         private Schedule_Add schedule_add;
         // ボタンを押しても処理を行わない(0:予定、1:追加)
         private int button_enable = 0;
@@ -32,8 +33,10 @@ namespace _0J01021_中村快_S3
         public MainWindow()
         {
             InitializeComponent();
-            schedule = new Schedule(this);
+            schedule = new Schedule_UserControl(this);
             schedule_add = new Schedule_Add(this);
+            
+
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)

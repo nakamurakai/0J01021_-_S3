@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Windows.UI.Notifications;
 
 namespace _0J01021_中村快_S3
 {
@@ -69,7 +71,7 @@ namespace _0J01021_中村快_S3
 
             // 日時
             DateTime date1 = (DateTime)dateText.SelectedDate;
-            DateTime date = new DateTime(date1.Year, date1.Month, date1.Day, int.Parse(hourComboBox.Text), int.Parse(minutesComboBox.Text),0);
+            DateTime date = new DateTime(date1.Year, date1.Month, date1.Day, int.Parse(hourComboBox.Text), int.Parse(minutesComboBox.Text), 0);
             // YYYY/MM/dd HH:mm:ss
             data.Add(date.ToString("G"));
 
@@ -117,7 +119,6 @@ namespace _0J01021_中村快_S3
 
             // 完了済みかどうか
             data.Add("0");
-
             // 変更の場合
             if (change)
             {
@@ -129,8 +130,21 @@ namespace _0J01021_中村快_S3
                 {
                     MessageBox.Show("データの変更に失敗しました");
                 }
+
+                // アラームの設定
+                // 元のセットされていたアラームを削除
+                // スケジュールされたトーストを取得する
+                var notifier = ToastNotificationManagerCompat.CreateToastNotifier();
+                var scheduledToasts = notifier.GetScheduledToastNotifications();
+                // Group, Tag で対象トーストを取得する
+                var toRemove = scheduledToasts.FirstOrDefault(i => i.Tag == data[0] && i.Group == "1");
+                if (toRemove != null)
+                {
+                    // スケジュールから削除する
+                    notifier.RemoveFromSchedule(toRemove);
+                }
             }
-            else
+            else // 追加の場合
             {
                 if (sql.Data_Insert(data)) // データ挿入が出来た場合
                 {
@@ -141,16 +155,56 @@ namespace _0J01021_中村快_S3
                     MessageBox.Show("データの登録に失敗しました");
                 }
             }
-            
+            // アラームの設定
+            if (data[7] != "")
+            {
+                // URLがついていたらリンクに飛ぶことができる
+                if (data[4] != "")
+                {
+                    new ToastContentBuilder()
+                        .AddText(DateTime.Parse(data[1]).ToString("F"))
+                        .AddText(doText.Text)
+                        .AddButton(new ToastButton()
+                            .SetContent("リンク")
+                            .AddArgument("url", data[4])
+                            .SetBackgroundActivation())
+                        .Schedule(date, toast =>
+                        {
+                            toast.Group = "1";
+                            toast.Tag = data[0];
+                        });
+                }
+                else
+                {
+                    new ToastContentBuilder()
+                    .AddArgument(doText.Text)
+                    .AddText(DateTime.Parse(data[1]).ToString("F"))
+                    .AddText(doText.Text)
+                    .Schedule(date, toast =>
+                    {
+                        toast.Group = "1";
+                        toast.Tag = data[0];
+                    });
+                }
+                new ToastContentBuilder()
+                    .AddText(DateTime.Parse(data[1]).ToString("F"))
+                    .AddText(doText.Text)
+                    .AddButton(new ToastButton()
+                        .SetContent("リンク")
+                        .AddArgument("url", data[4])
+                        .SetBackgroundActivation()).Show();
+            }
         }
 
+        // 削除ボタン
         private void deleteButton_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("このデータを削除しますが本当によろしいですか", "Information", MessageBoxButton.YesNo) == MessageBoxResult.No) return; 
             string s = "DELETE FROM dbo.todo WHERE Id = @id";
 
             sql.Delete(s, item[0], "@id");
-            
+            // セットされていたアラームを削除
+            ToastNotificationManager.History.Remove(item[1], "1");
             mainWindow.Detail_Close();
         }
 
@@ -204,6 +258,7 @@ namespace _0J01021_中村快_S3
                     locationText.Text = item[4];
                     urlText.Text = item[5];
                     explanationText.Text = item[6];
+                    setalarmComboBox();
                 }
                 else // データ追加の時
                 {
@@ -216,8 +271,33 @@ namespace _0J01021_中村快_S3
                     locationText.Text = "";
                     urlText.Text = "";
                     explanationText.Text = "";
+                    alarmComboBox.SelectedIndex = 0;
                 }
             }
+        }
+
+        // alarmcomboBoxにセットするテキスト
+        private void setalarmComboBox()
+        {
+            if (item[7] == "")
+            {
+                alarmComboBox.SelectedIndex = 0;
+                return;
+            }
+            DateTime date = DateTime.Parse(item[2]);
+            DateTime alarm = DateTime.Parse(item[7]);
+            // 差
+            TimeSpan span = date - alarm;
+            // 5分
+            if (span.Minutes == 5) alarmComboBox.SelectedIndex = 1;
+            else if (span.Minutes == 10) alarmComboBox.SelectedIndex = 2;
+            else if (span.Minutes == 15) alarmComboBox.SelectedIndex = 3;
+            else if (span.Minutes == 30) alarmComboBox.SelectedIndex = 4;
+            else if (span.Hours == 1) alarmComboBox.SelectedIndex = 5;
+            else if (span.Hours == 3) alarmComboBox.SelectedIndex = 6;
+            else if (span.Hours == 12) alarmComboBox.SelectedIndex = 7;
+            else if (span.Days == 1) alarmComboBox.SelectedIndex = 8;
+            else if (span.Days == 7) alarmComboBox.SelectedIndex = 9;
         }
 
         private void categoryComboBox_ItemAdd()
