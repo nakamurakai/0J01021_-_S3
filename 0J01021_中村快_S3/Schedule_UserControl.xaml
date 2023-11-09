@@ -167,7 +167,7 @@
             x:Name="nowButton"
             Background="#FFFFFF"
             BorderBrush="#CEC3C3"
-            Content="2023/10/18"
+            Content="一覧"
             FontFamily="UD Digi Kyokasho NK-R"
             FontSize="16"
             HorizontalAlignment="Left"
@@ -179,6 +179,7 @@
         <DatePicker
             Name="datePicker1"
             HorizontalAlignment="Center"
+            HorizontalContentAlignment="Center"
             Margin="0,40,0,0"
             FontFamily="UD Digi Kyokasho NK-R"
             FontSize="16"

@@ -186,13 +186,6 @@ namespace _0J01021_中村快_S3
                         toast.Tag = data[0];
                     });
                 }
-                new ToastContentBuilder()
-                    .AddText(DateTime.Parse(data[1]).ToString("F"))
-                    .AddText(doText.Text)
-                    .AddButton(new ToastButton()
-                        .SetContent("リンク")
-                        .AddArgument("url", data[4])
-                        .SetBackgroundActivation()).Show();
             }
         }
 
@@ -203,8 +196,17 @@ namespace _0J01021_中村快_S3
             string s = "DELETE FROM dbo.todo WHERE Id = @id";
 
             sql.Delete(s, item[0], "@id");
-            // セットされていたアラームを削除
-            ToastNotificationManager.History.Remove(item[1], "1");
+            // 元のセットされていたアラームを削除
+            // スケジュールされたトーストを取得する
+            var notifier = ToastNotificationManagerCompat.CreateToastNotifier();
+            var scheduledToasts = notifier.GetScheduledToastNotifications();
+            // Group, Tag で対象トーストを取得する
+            var toRemove = scheduledToasts.FirstOrDefault(i => i.Tag == item[1] && i.Group == "1");
+            if (toRemove != null)
+            {
+                // スケジュールから削除する
+                notifier.RemoveFromSchedule(toRemove);
+            }
             mainWindow.Detail_Close();
         }
 

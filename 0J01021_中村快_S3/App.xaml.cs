@@ -20,17 +20,18 @@ namespace _0J01021_中村快_S3
         {
             ToastNotificationManagerCompat.OnActivated += toastArgs =>
             {
-                // Obtain the arguments from the notification
+                // 通知から引数を取得する
                 ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
 
-                // Obtain any user input (text boxes, menu selections) from the notification
+                // 通知からユーザー入力 (テキスト ボックス、メニュー選択) を取得します。
                 ValueSet userInput = toastArgs.UserInput;
 
-                // Need to dispatch to UI thread if performing UI operations
+                // UI操作を実行する場合はUIスレッドにディスパッチする必要があります
                 Application.Current.Dispatcher.Invoke(delegate
                 {
                     if (args.TryGetValue("url", out string s))
                     {
+                        // URLのリンクにアクセスする
                         var startInfo = new System.Diagnostics.ProcessStartInfo(s);
                         startInfo.UseShellExecute = true;
                         System.Diagnostics.Process.Start(startInfo);

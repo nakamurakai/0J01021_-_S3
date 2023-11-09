@@ -255,6 +255,7 @@ namespace _0J01021_中村快_S3
             }
         }
 
+        // 画面のコンテンツ作成
         private void Create_Content()
         {
             // 既存のコンテンツを削除
@@ -503,7 +504,6 @@ namespace _0J01021_中村快_S3
             datePicker1.SelectedDate = setdate;
             // nowButtonの設定
             nowButton.Margin = new Thickness(120, 40, 0, 0);
-            nowButton.Content = setdate.ToString("yyyy/MM/dd");
             nowButton.Width = 210;
 
             beforeButton.Content = setdate.AddDays(-1).ToString("yyyy/MM/dd");
@@ -525,7 +525,6 @@ namespace _0J01021_中村快_S3
             datePicker1.Visibility = Visibility.Hidden;
 
             nowButton.Margin = new Thickness(120, 40, 0, 0);
-            nowButton.Content = category[setcategory][0];
             nowButton.Width = 210;
             if (setcategory >= 1)
             {
@@ -562,12 +561,12 @@ namespace _0J01021_中村快_S3
 
             if (this.IsVisible)
             {
-                // カテゴリを取得し、カテゴリが何もなかった場合カテゴリ表示をできなくする
+                // カテゴリを取得する
                 category = new List<List<string>>();
                 int[] p = new int[1] { 0 };
                 string s = "SELECT DISTINCT Category FROM dbo.todo";
                 category = sql.Data_SelectAll(s, p);
-
+                // カテゴリが何もなかった場合カテゴリ表示をできなくする
                 if (category.Count > 0) categoryRadioButton.IsEnabled = true;
                 else categoryRadioButton.IsEnabled = false;
 
