@@ -1,4 +1,7 @@
-﻿using System;
+﻿// 制作実習II 第3期プログラム
+// author 0J01021 中村快
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;

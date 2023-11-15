@@ -1,4 +1,7 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
+﻿// 制作実習II 第3期プログラム
+// author 0J01021 中村快
+
+using Microsoft.Toolkit.Uwp.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
