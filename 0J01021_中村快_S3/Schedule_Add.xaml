@@ -43,7 +43,7 @@
             HorizontalAlignment="Left"
             Margin="225,15,0,0"
             VerticalAlignment="Top"
-            Width="80" 
+            Width="90" 
             Height="20">
             <ComboBoxItem Content="設定しない"/>
             <ComboBoxItem Content="5分前"/>

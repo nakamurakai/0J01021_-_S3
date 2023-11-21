@@ -16,6 +16,7 @@ namespace _0J01021_中村快_S3
 {
     public class SQL
     {
+        // 接続文字列
         private string con = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\ckadai\\C#\\0J01021_中村快_S3\\0J01021_中村快_S3\\Database1.mdf;Integrated Security=True;Connect Timeout=30";
 
         private List<string> datas_name = new List<string>()
